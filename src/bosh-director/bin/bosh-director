@@ -32,16 +32,11 @@ puma_configuration = Puma::Configuration.new do |user_config|
   user_config.bind 'tcp://127.0.0.1'
   user_config.port config.port
   user_config.app rack_app
+  user_config.preload_app!
 end
 puma_launcher = Puma::Launcher.new(puma_configuration)
-
-%w(TERM INT QUIT).each do |signal|
-  trap(signal) do
-    Bosh::Director::Config.logger.info('Shutting down Director')
-    puma_launcher.stop
-  end
-end
 
 Bosh::Director::Config.logger.info("Listening on port #{config.port}")
 Bosh::Director::Config.log_director_start
 puma_launcher.run
+
