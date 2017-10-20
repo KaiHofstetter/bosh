@@ -34,7 +34,7 @@ module Bosh::Director
       let(:deployment_name) { 'dep1' }
 
       let(:manifest_hash) do
-        manifest_hash = Bosh::Spec::NewDeployments.minimal_manifest_with_stemcell
+        manifest_hash = Bosh::Spec::NewDeployments.simple_manifest
         manifest_hash['name'] = deployment_name
         manifest_hash
       end

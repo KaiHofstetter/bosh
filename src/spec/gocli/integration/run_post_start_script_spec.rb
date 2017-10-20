@@ -31,7 +31,7 @@ describe 'post start script', type: :integration do
     end
 
     it 'runs post-start script on subsequent deploys only when previous post-start scripts have failed' do
-      manifest = Bosh::Spec::NewDeployments.test_release_manifest.merge(
+      manifest = Bosh::Spec::NewDeployments.manifest_with_release.merge(
           {
               'jobs' => [Bosh::Spec::NewDeployments.simple_job(
                              name: 'job_with_templates_having_post_start_scripts',
@@ -52,7 +52,7 @@ describe 'post start script', type: :integration do
       # We expect the script to run again, even though nothing has changed, just because it failed last time
       expect(agent_log.scan("/jobs/job_with_post_start_script/bin/post-start' script has failed with error").size).to eq(2)
 
-      manifest = Bosh::Spec::NewDeployments.test_release_manifest.merge(
+      manifest = Bosh::Spec::NewDeployments.manifest_with_release.merge(
           {
               'jobs' => [Bosh::Spec::NewDeployments.simple_job(
                              name: 'job_with_templates_having_post_start_scripts',
