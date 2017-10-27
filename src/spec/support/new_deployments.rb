@@ -51,38 +51,21 @@ module Bosh::Spec
       }
     end
 
-    def self.simple_errand_job
-      {
-        'name' => 'fake-errand-name',
-        'templates' => [
-          {
-            'release' => 'bosh-release',
-            'name' => 'errand1'
-          }
-        ],
-        'stemcell' => 'default',
-        'lifecycle' => 'errand',
-        'vm_type' => 'a',
-        'instances' => 1,
-        'networks' => [{'name' => 'a'}],
-        'properties' => {
-          'errand1' => {
-            'exit_code' => 0,
-            'stdout' => 'fake-errand-stdout',
-            'stderr' => 'fake-errand-stderr',
-            'run_package_file' => true,
-          },
-        },
-      }
-    end
-
     def self.simple_errand_instance_group
       {
         'name' => 'fake-errand-name',
         'jobs' => [
           {
             'release' => 'bosh-release',
-            'name' => 'errand1'
+            'name' => 'errand1',
+            'properties' => {
+              'errand1' => {
+                'exit_code' => 0,
+                'stdout' => 'fake-errand-stdout',
+                'stderr' => 'fake-errand-stderr',
+                'run_package_file' => true,
+              },
+            },
           }
         ],
         'stemcell' => 'default',
@@ -90,17 +73,10 @@ module Bosh::Spec
         'vm_type' => 'a',
         'instances' => 1,
         'networks' => [{'name' => 'a'}],
-        'properties' => {
-          'errand1' => {
-            'exit_code' => 0,
-            'stdout' => 'fake-errand-stdout',
-            'stderr' => 'fake-errand-stderr',
-            'run_package_file' => true,
-          },
-        },
       }
     end
 
+    # TODO: remove once not used anymore
     def self.simple_job(opts = {})
       job_hash = {
         'name' => opts.fetch(:name, 'foobar'),
@@ -237,12 +213,14 @@ module Bosh::Spec
       )
     end
 
+    # TODO: remove once not used anymore
     def self.simple_manifest
       manifest_with_release.merge({
         'jobs' => [simple_job]
       })
     end
 
+    # TODO: remove once not used anymore
     def self.simple_manifest_with_stemcell
       test_release_manifest_with_stemcell.merge({
         'jobs' => [simple_job]
@@ -256,20 +234,32 @@ module Bosh::Spec
     end
 
     def self.manifest_with_errand
-      manifest = simple_manifest_with_stemcell.merge('name' => 'errand')
-      manifest['jobs'].find { |job| job['name'] == 'foobar'}['instances'] = 1
-      manifest['jobs'] << simple_errand_job
+      manifest = simple_manifest_with_instance_groups.merge('name' => 'errand')
+      manifest['instance_groups'].find { |instance_group| instance_group['name'] == 'foobar'}['instances'] = 1
+      manifest['instance_groups'] << simple_errand_instance_group
       manifest
     end
 
     def self.manifest_errand_with_placeholders
       manifest = manifest_with_errand
-      manifest['jobs'][1]['properties']['errand1']['stdout'] = "((placeholder))"
+      manifest['instance_groups'][1]['jobs'].first['properties']['errand1']['stdout'] = "((placeholder))"
       manifest
     end
 
+    def self.test_release_instance_group
+      {
+        'instance_group' => [{
+          'name' => 'instance_group',
+          'jobs' => [{ 'name' => 'job_using_pkg_1' }],
+          'instances' => 1,
+          'resource_pool' => 'a',
+          'networks' => [{ 'name' => 'a' }]
+        }]
+      }
+    end
+
     def self.remote_release_manifest(remote_release_url, sha1, version='latest')
-      minimal_manifest_with_ubuntu_stemcell.merge(test_release_job).merge({
+      minimal_manifest_with_ubuntu_stemcell.merge(test_release_instance_group).merge({
         'releases' => [{
           'name'    => 'test_release',
           'version' => version,
@@ -280,26 +270,13 @@ module Bosh::Spec
     end
 
     def self.local_release_manifest(local_release_path, version = 'latest')
-      minimal_manifest_with_ubuntu_stemcell.merge(test_release_job).merge({
+      minimal_manifest_with_ubuntu_stemcell.merge(test_release_instance_group).merge({
         'releases' => [{
           'name'    => 'test_release',
           'version' => version,
           'url' => local_release_path,
         }]
       })
-    end
-
-    def self.test_release_job
-      {
-        'jobs' => [{
-          'name' => 'job',
-          'templates' => [{ 'name' => 'job_using_pkg_1' }],
-          'instances' => 1,
-          'vm_type' => 'a',
-          'networks' => [{ 'name' => 'a' }],
-          'stemcell' => 'default'
-        }]
-      }
     end
 
     def self.simple_cloud_config_with_multiple_azs_and_cpis
@@ -485,9 +462,9 @@ module Bosh::Spec
 
     def self.stemcell_os_specific_addon_manifest
       manifest_with_release.merge({
-        'jobs' => [
-          simple_job(vm_type: 'a', name: "has-addon-vm", instances: 1, stemcell: 'toronto'),
-          simple_job(vm_type: 'b', name: "no-addon-vm", instances: 1, stemcell: 'centos')
+        'instance_groups' => [
+          simple_instance_group(vm_type: 'a', name: "has-addon-vm", instances: 1, stemcell: 'toronto'),
+          simple_instance_group(vm_type: 'b', name: "no-addon-vm", instances: 1, stemcell: 'centos')
         ]
       })
     end
@@ -536,7 +513,7 @@ module Bosh::Spec
       }
     end
 
-    def self.deployment_manifest_with_addon
+    def self.manifest_with_addons
       minimal_manifest.merge(
         'name' => DEFAULT_DEPLOYMENT_NAME,
         'releases' => [
@@ -547,9 +524,9 @@ module Bosh::Spec
           {'name' => 'dummy2',
             'version' => '0.2-dev'}
         ],
-        'jobs' => [{
+        'instance_groups' => [{
           'name' => 'foobar',
-          'templates' => [{'name' => 'foobar', 'release' => 'bosh-release'}],
+          'jobs' => [{'name' => 'foobar', 'release' => 'bosh-release'}],
           'instances' => 1,
           'vm_type' => 'a',
           'networks' => [{'name' => 'a'}],
@@ -563,7 +540,7 @@ module Bosh::Spec
       )
     end
 
-    def self.complex_deployment_manifest_with_addon
+    def self.complex_manifest_with_addon
       manifest = minimal_manifest.merge(
         'name' => DEFAULT_DEPLOYMENT_NAME,
         'releases' => [
@@ -574,10 +551,10 @@ module Bosh::Spec
           {'name' => 'dummy2',
             'version' => '0.2-dev'}
         ],
-        'jobs' => [
-          simple_job(vm_type: 'b', name: 'has-rc-addon-vm', templates: [{"name" => "foobar", "release" => "bosh-release"}], instances: 1, stemcell: 'centos'),
-          simple_job(vm_type: 'a', name: 'has-depl-rc-addons-vm', templates: [{"name" => "foobar", "release" => 'bosh-release'}], instances: 1),
-          simple_job(vm_type: 'a', name: 'has-depl-addon-vm', templates: [{"name" => "foobar_without_packages", "release" => 'bosh-release'}], instances: 1),
+        'instance_groups' => [
+          simple_instance_group(vm_type: 'b', name: 'has-rc-addon-vm', jobs: [{"name" => "foobar", "release" => "bosh-release"}], instances: 1, stemcell: 'centos'),
+          simple_instance_group(vm_type: 'a', name: 'has-depl-rc-addons-vm', jobs: [{"name" => "foobar", "release" => 'bosh-release'}], instances: 1),
+          simple_instance_group(vm_type: 'a', name: 'has-depl-addon-vm', jobs: [{"name" => "foobar_without_packages", "release" => 'bosh-release'}], instances: 1),
         ],
         'addons' => [
           'name' => 'addon1',
@@ -596,28 +573,32 @@ module Bosh::Spec
       manifest
     end
 
-    def self.manifest_with_errand_job_on_service_instance
-      manifest = simple_manifest
-      manifest['jobs'] = [service_job_with_errand]
+
+    def self.manifest_with_errand_on_service_instance
+      manifest = manifest_with_release
+      manifest['instance_groups'] = [service_instance_group_with_errand]
       manifest
     end
 
-    def self.service_job_with_errand
+    def self.service_instance_group_with_errand
       {
         'name' => 'service_with_errand',
-        'templates' => [{'release' => 'bosh-release', 'name' => 'errand1'}],
+        'jobs' => [{
+          'release' => 'bosh-release',
+          'name' => 'errand1',
+          'properties' => {
+            'errand1' => {
+              'exit_code' => 0,
+              'stdout' => 'fake-errand-stdout-service',
+              'stderr' => 'fake-errand-stderr-service',
+              'run_package_file' => true,
+            },
+          },
+        }],
         'lifecycle' => 'service',
         'vm_type' => 'a',
         'instances' => 1,
         'networks' => [{'name' => 'a'}],
-        'properties' => {
-          'errand1' => {
-            'exit_code' => 0,
-            'stdout' => 'fake-errand-stdout-service',
-            'stderr' => 'fake-errand-stderr-service',
-            'run_package_file' => true,
-          },
-        },
         'stemcell' => 'default',
       }
     end

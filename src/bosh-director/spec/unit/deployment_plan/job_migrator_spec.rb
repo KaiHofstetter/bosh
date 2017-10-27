@@ -183,7 +183,7 @@ module Bosh::Director
 
         context 'when migrated_from instance group is still referenced in new deployment' do
           let(:deployment_manifest) do
-            manifest = Bosh::Spec::NewDeployments.simple_manifest_with_stemcell
+            manifest = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
             manifest['jobs'] = [
               etcd_job_spec,
               Bosh::Spec::NewDeployments.simple_job(name: 'etcd_z1').merge({'azs' => ['z1']}),
@@ -226,7 +226,7 @@ module Bosh::Director
 
         context 'when two instance groups migrate from the same job' do
           let(:deployment_manifest) do
-            manifest = Bosh::Spec::NewDeployments.simple_manifest_with_stemcell
+            manifest = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
             another_job_spec = Bosh::Spec::NewDeployments.simple_job(name: 'another')
             another_job_spec['migrated_from'] = etcd_job_spec['migrated_from']
             another_job_spec['azs'] = etcd_job_spec['azs']
