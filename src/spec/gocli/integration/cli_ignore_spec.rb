@@ -85,7 +85,7 @@ describe 'ignore/unignore-instance', type: :integration do
       with_reset_sandbox_before_each(enable_post_deploy: true)
 
       it 'does not run them on the ignored vms' do
-        manifest_hash = Bosh::Spec::NewDeployments.simple_v2_manifest_with_stemcell
+        manifest_hash = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
         cloud_config = Bosh::Spec::NewDeployments.simple_cloud_config
 
         manifest_hash['instance_groups'].clear
@@ -190,7 +190,7 @@ describe 'ignore/unignore-instance', type: :integration do
 
     context 'when the number of instances in an instance group did not change between deployments' do
       it 'leaves ignored instances alone when instance count is 1' do
-        manifest_hash = Bosh::Spec::NewDeployments.simple_v2_manifest_with_stemcell
+        manifest_hash = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
         cloud_config = Bosh::Spec::NewDeployments.simple_cloud_config
 
         manifest_hash['instance_groups'].clear
@@ -232,7 +232,7 @@ describe 'ignore/unignore-instance', type: :integration do
 
 
       it 'leaves ignored instances alone when count of the instance groups is larger than 1' do
-        manifest_hash = Bosh::Spec::NewDeployments.simple_v2_manifest_with_stemcell
+        manifest_hash = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
         cloud_config = Bosh::Spec::NewDeployments.simple_cloud_config
 
         manifest_hash['instance_groups'].clear
@@ -271,7 +271,7 @@ describe 'ignore/unignore-instance', type: :integration do
     context 'when the existing instances is less than the desired ones' do
 
       it 'should handle ignored instances' do
-        manifest_hash = Bosh::Spec::NewDeployments.simple_v2_manifest_with_stemcell
+        manifest_hash = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
         cloud_config = Bosh::Spec::NewDeployments.simple_cloud_config
 
         manifest_hash['instance_groups'].clear
@@ -345,7 +345,7 @@ describe 'ignore/unignore-instance', type: :integration do
 
       context 'when the ignored instances is larger than the desired ones' do
         it "should fail to deploy" do
-          manifest_hash = Bosh::Spec::NewDeployments.simple_v2_manifest_with_stemcell
+          manifest_hash = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
           cloud_config = Bosh::Spec::NewDeployments.simple_cloud_config
 
           manifest_hash['instance_groups'].clear
@@ -385,7 +385,7 @@ describe 'ignore/unignore-instance', type: :integration do
 
       context 'when the ignored instances is equal to desired ones' do
         it 'deletes all non-ignored vms and leaves the ignored alone without updating them' do
-          manifest_hash = Bosh::Spec::NewDeployments.simple_v2_manifest_with_stemcell
+          manifest_hash = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
           cloud_config = Bosh::Spec::NewDeployments.simple_cloud_config
 
           manifest_hash['instance_groups'].clear
@@ -439,7 +439,7 @@ describe 'ignore/unignore-instance', type: :integration do
 
         it 'should keep the ignored instances untouched and adjust the number of remaining functional instances' do
 
-          manifest_hash = Bosh::Spec::NewDeployments.simple_v2_manifest_with_stemcell
+          manifest_hash = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
           cloud_config = Bosh::Spec::NewDeployments.simple_cloud_config
 
           manifest_hash['instance_groups'].clear
@@ -494,7 +494,7 @@ describe 'ignore/unignore-instance', type: :integration do
     context 'when --recreate flag is passed' do
       it 'should recreate needed vms but leave the ignored ones alone' do
 
-        manifest_hash = Bosh::Spec::NewDeployments.simple_v2_manifest_with_stemcell
+        manifest_hash = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
         cloud_config = Bosh::Spec::NewDeployments.simple_cloud_config
 
         manifest_hash['instance_groups'].clear
@@ -557,7 +557,7 @@ describe 'ignore/unignore-instance', type: :integration do
 
     context 'when an attempt is made to delete an instance group from deployment' do
       it 'fails if the instance group contains ignored vms' do
-        manifest_hash = Bosh::Spec::NewDeployments.simple_v2_manifest_with_stemcell
+        manifest_hash = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
         cloud_config = Bosh::Spec::NewDeployments.simple_cloud_config
 
         manifest_hash['instance_groups'].clear
@@ -618,7 +618,7 @@ describe 'ignore/unignore-instance', type: :integration do
 
       context 'when using v2 manifest' do
         it 'should not contact the VM and deploys successfully' do
-          manifest_hash = Bosh::Spec::NewDeployments.simple_v2_manifest_with_stemcell
+          manifest_hash = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
           cloud_config = Bosh::Spec::NewDeployments.simple_cloud_config
 
           manifest_hash['instance_groups'].clear

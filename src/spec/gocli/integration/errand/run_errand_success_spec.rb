@@ -233,7 +233,7 @@ describe 'run-errand success', type: :integration, with_tmp_dir: true do
 
     context 'when the number of dynamic IPs is equal to the total number of vms' do
       let(:manifest_hash) do
-        Bosh::Spec::NewDeployments.test_release_manifest.merge({
+        Bosh::Spec::NewDeployments.manifest_with_release.merge({
           'jobs' => [{
             'name' => 'fake-errand-name',
             'template' => 'errand_without_package',

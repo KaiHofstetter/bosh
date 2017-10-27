@@ -51,7 +51,7 @@ describe 'cli: deployment process', type: :integration do
     context 'given two deployments from one release' do
       it 'is successful' do
         release_filename = spec_asset('test_release.tgz')
-        minimal_manifest = Bosh::Spec::NewDeployments.minimal_manifest_with_stemcell
+        minimal_manifest = Bosh::Spec::NewDeployments.minimal_manifest
         deployment_manifest = yaml_file('minimal_deployment', minimal_manifest)
 
         cloud_config = Bosh::Spec::NewDeployments.simple_cloud_config
@@ -309,7 +309,7 @@ lines'}
   describe 'bosh deployments' do
     it 'lists deployment details' do
       release_filename = spec_asset('test_release.tgz')
-      deployment_manifest = yaml_file('minimal', Bosh::Spec::NewDeployments.minimal_manifest_with_stemcell)
+      deployment_manifest = yaml_file('minimal', Bosh::Spec::NewDeployments.minimal_manifest)
       cloud_config_manifest = yaml_file('cloud_manifest', Bosh::Spec::NewDeployments.simple_cloud_config)
 
       bosh_runner.run("update-cloud-config #{cloud_config_manifest.path}")
@@ -362,7 +362,7 @@ lines'}
   describe 'bosh delete deployment' do
     it 'deletes an existing deployment' do
       release_filename = spec_asset('test_release.tgz')
-      deployment_manifest = yaml_file('minimal', Bosh::Spec::NewDeployments.minimal_manifest_with_stemcell)
+      deployment_manifest = yaml_file('minimal', Bosh::Spec::NewDeployments.minimal_manifest_with_ubuntu_stemcell)
       cloud_config_manifest = yaml_file('cloud_manifest', Bosh::Spec::NewDeployments.simple_cloud_config)
 
       bosh_runner.run("update-cloud-config #{cloud_config_manifest.path}")

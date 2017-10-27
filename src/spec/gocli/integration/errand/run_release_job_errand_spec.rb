@@ -166,7 +166,7 @@ describe 'run release job errand', type: :integration, with_tmp_dir: true do
     context 'when starting a vm for an errand lifecycle group fails' do
       let(:manifest_hash) do
         hash = Bosh::Spec::NewDeployments.manifest_with_errand_job_on_service_instance
-        hash['jobs'] << Bosh::Spec::NewDeployments.simple_errand_job
+        hash['jobs'] << Bosh::Spec::NewDeployments.simple_errand_instance_group
         hash
       end
 

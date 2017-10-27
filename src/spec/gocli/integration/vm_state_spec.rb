@@ -8,7 +8,7 @@ describe 'vm state', type: :integration do
   describe 'detached' do
     it 'removes vm but keeps its disk' do
       manifest_hash = Bosh::Spec::NetworkingManifest.deployment_manifest(instances: 1)
-      manifest_hash['jobs'].first['persistent_disk'] = 3000
+      manifest_hash['instance_groups'].first['persistent_disk'] = 3000
       deploy_from_scratch(manifest_hash: manifest_hash, cloud_config_hash: Bosh::Spec::NewDeployments.simple_cloud_config)
 
       instances = director.instances.select { |instance|
@@ -62,14 +62,14 @@ describe 'vm state', type: :integration do
       expect(bosh_runner.run('stop foobar/0 --hard', deployment_name: deployment_name)).to match %r{Updating instance foobar}
       expect(director.vms.size).to eq(0)
 
-      first_manifest_hash['jobs'].first['networks'].first['static_ips'] = ['192.168.1.10']
+      first_manifest_hash['instance_groups'].first['networks'].first['static_ips'] = ['192.168.1.10']
       deploy_simple_manifest(manifest_hash: first_manifest_hash)
       expect(director.vms.map(&:ips)).to eq([])
 
       second_manifest_hash = Bosh::Spec::NetworkingManifest.deployment_manifest(
         name: 'second',
         instances: 1,
-        template: 'foobar_without_packages'
+        job: 'foobar_without_packages'
       )
       # this deploy takes the newly freed IP
       deploy_simple_manifest(manifest_hash: second_manifest_hash)

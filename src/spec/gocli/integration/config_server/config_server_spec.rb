@@ -559,7 +559,7 @@ Error: Unable to render instance groups for deployment. Errors are:
           end
 
           it 'does variable substitution on the initial creation' do
-            manifest_hash = Bosh::Spec::NewDeployments.simple_manifest
+            manifest_hash = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
             manifest_hash['tags'] = {
               'tag-key1' => '((/tag-variable1))',
               'tag-key2' => '((tag-variable2))'

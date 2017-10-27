@@ -274,7 +274,7 @@ Error: Unable to render instance groups for deployment. Errors are:
 
       context 'when the pre-start scripts are valid' do
         let(:manifest) do
-          Bosh::Spec::NewDeployments.test_release_manifest.merge(
+          Bosh::Spec::NewDeployments.manifest_with_release.merge(
             {
               'instance_groups' => [Bosh::Spec::NewDeployments.instance_group_with_many_jobs(
                 name: 'job_with_templates_having_prestart_scripts',
@@ -309,7 +309,7 @@ Error: Unable to render instance groups for deployment. Errors are:
       end
 
       it 'should append the logs to the previous pre-start logs' do
-        manifest = Bosh::Spec::NewDeployments.test_release_manifest.merge(
+        manifest = Bosh::Spec::NewDeployments.manifest_with_release.merge(
           {
             'releases' => [{
               'name' => 'release_with_prestart_script',
@@ -349,7 +349,7 @@ Error: Unable to render instance groups for deployment. Errors are:
 
       context 'when the pre-start scripts are corrupted' do
         let(:manifest) do
-          Bosh::Spec::NewDeployments.test_release_manifest.merge(
+          Bosh::Spec::NewDeployments.manifest_with_release.merge(
             {
               'releases' => [{
                 'name' => 'release_with_corrupted_pre_start',
@@ -399,7 +399,7 @@ Error: Unable to render instance groups for deployment. Errors are:
 
       context 'when the post-deploy scripts are valid' do
         let(:manifest) do
-          Bosh::Spec::NewDeployments.test_release_manifest.merge(
+          Bosh::Spec::NewDeployments.manifest_with_release.merge(
             {
               'instance_groups' => [Bosh::Spec::NewDeployments.instance_group_with_many_jobs(
                 name: 'job_with_post_deploy_script',
@@ -487,7 +487,7 @@ Error: Unable to render instance groups for deployment. Errors are:
 
       context 'when the post-deploy scripts exit with error' do
         let(:manifest) do
-          Bosh::Spec::NewDeployments.test_release_manifest.merge(
+          Bosh::Spec::NewDeployments.manifest_with_release.merge(
             {
               'instance_groups' => [Bosh::Spec::NewDeployments.instance_group_with_many_jobs(
                 name: 'job_with_post_deploy_script',
@@ -526,7 +526,7 @@ Error: Unable to render instance groups for deployment. Errors are:
 
       context 'when nothing has changed in the deployment it does not run the post-deploy script' do
         let(:manifest) do
-          Bosh::Spec::NewDeployments.test_release_manifest.merge(
+          Bosh::Spec::NewDeployments.manifest_with_release.merge(
             {
               'instance_groups' => [Bosh::Spec::NewDeployments.instance_group_with_many_jobs(
                 name: 'job_with_post_deploy_script',
@@ -582,7 +582,7 @@ Error: Unable to render instance groups for deployment. Errors are:
 
     context 'it does not support running post-deploy scripts' do
       let(:manifest) do
-        Bosh::Spec::NewDeployments.test_release_manifest.merge(
+        Bosh::Spec::NewDeployments.manifest_with_release.merge(
           {
             'instance_groups' => [Bosh::Spec::NewDeployments.instance_group_with_many_jobs(
               name: 'job_with_post_deploy_script',
@@ -625,7 +625,7 @@ Error: Unable to render instance groups for deployment. Errors are:
 
     context 'when deployment manifest has local templates properties defined' do
       let(:manifest) do
-        Bosh::Spec::NewDeployments.test_release_manifest.merge(
+        Bosh::Spec::NewDeployments.manifest_with_release.merge(
           {
             'instance_groups' => [Bosh::Spec::NewDeployments.instance_group_with_many_jobs(
               name: 'job_with_templates_having_properties',
@@ -677,7 +677,7 @@ Error: Unable to render instance groups for deployment. Errors are:
       it 'should update the job when template properties change' do
         deploy(manifest_hash: manifest)
 
-        manifest = Bosh::Spec::NewDeployments.test_release_manifest.merge(
+        manifest = Bosh::Spec::NewDeployments.manifest_with_release.merge(
           {
             'instance_groups' => [Bosh::Spec::NewDeployments.instance_group_with_many_jobs(
               name: 'job_with_templates_having_properties',
@@ -719,7 +719,7 @@ Error: Unable to render instance groups for deployment. Errors are:
 
       context 'when the template has local properties defined but missing some of them' do
         let(:manifest) do
-          Bosh::Spec::NewDeployments.test_release_manifest.merge(
+          Bosh::Spec::NewDeployments.manifest_with_release.merge(
             {
               'instance_groups' => [Bosh::Spec::NewDeployments.instance_group_with_many_jobs(
                 name: 'job_with_templates_having_properties',
@@ -761,7 +761,7 @@ Error: Unable to render instance groups for deployment. Errors are:
 
       context 'when multiple templates has local properties' do
         let(:manifest) do
-          Bosh::Spec::NewDeployments.test_release_manifest.merge(
+          Bosh::Spec::NewDeployments.manifest_with_release.merge(
             {
               'instance_groups' => [Bosh::Spec::NewDeployments.instance_group_with_many_jobs(
                 name: 'job_with_templates_having_properties',
@@ -816,7 +816,7 @@ Error: Unable to render instance groups for deployment. Errors are:
 
       context 'when same template is referenced in multiple deployment jobs' do
         let (:manifest) do
-          Bosh::Spec::NewDeployments.test_release_manifest.merge(
+          Bosh::Spec::NewDeployments.manifest_with_release.merge(
             {
               'instance_groups' => [
                 Bosh::Spec::NewDeployments.instance_group_with_many_jobs(
@@ -1114,7 +1114,7 @@ Error: Unable to render instance groups for deployment. Errors are:
 
       context 'it exercises the entire compiled release lifecycle' do
         let(:manifest) do
-          Bosh::Spec::NewDeployments.test_release_manifest.merge(
+          Bosh::Spec::NewDeployments.manifest_with_release.merge(
             {
               'jobs' => [
                 {
@@ -1196,7 +1196,7 @@ Error: Unable to render instance groups for deployment. Errors are:
 
     context 'when errand jobs are used' do
       let(:manifest) {
-        Bosh::Spec::NewDeployments.test_release_manifest.merge({
+        Bosh::Spec::NewDeployments.manifest_with_release.merge({
           'instance_groups' => [
             Bosh::Spec::NewDeployments.instance_group_with_many_jobs(
               name: 'job_with_post_deploy_script',
@@ -1352,7 +1352,7 @@ Error: Unable to render instance groups for deployment. Errors are:
       include Bosh::Spec::CreateReleaseOutputParsers
 
       let(:deployment_manifest) do
-        minimal_manifest = Bosh::Common::DeepCopy.copy(Bosh::Spec::NewDeployments.test_release_manifest)
+        minimal_manifest = Bosh::Common::DeepCopy.copy(Bosh::Spec::NewDeployments.manifest_with_release)
 
         minimal_manifest['properties'] = {'some_namespace' => {'test_property' => 'initial value'}}
         minimal_manifest['instance_groups'] = [{'name' => 'test_group',

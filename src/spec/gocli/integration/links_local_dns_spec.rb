@@ -29,36 +29,36 @@ describe 'Links with local_dns enabled', type: :integration do
     cloud_config_hash
   end
 
-  let(:api_job_spec) do
-    job_spec = Bosh::Spec::NewDeployments.simple_job(
+  let(:api_instance_group_spec) do
+    spec = Bosh::Spec::NewDeployments.simple_instance_group(
       name: 'my_api',
-      templates: [{'name' => 'api_server', 'consumes' => {
+      jobs: [{'name' => 'api_server', 'consumes' => {
         'db' => {'from' => 'db'}
       }}],
       instances: 1
     )
-    job_spec['networks'] = [{ 'name' => 'manual-network'}]
-    job_spec['azs'] = ['z1']
-    job_spec
+    spec['networks'] = [{ 'name' => 'manual-network'}]
+    spec['azs'] = ['z1']
+    spec
   end
 
-  let(:mysql_job_spec) do
-    job_spec = Bosh::Spec::NewDeployments.simple_job(
+  let(:mysql_instance_group_spec) do
+    spec = Bosh::Spec::NewDeployments.simple_instance_group(
       name: 'mysql',
-      templates: [{'name' => 'database'}],
+      jobs: [{'name' => 'database'}],
       instances: 1,
       static_ips: ['192.168.1.10']
     )
-    job_spec['azs'] = ['z1']
-    job_spec['networks'] = [{ 'name' => provider_network_name}]
-    job_spec
+    spec['azs'] = ['z1']
+    spec['networks'] = [{ 'name' => provider_network_name}]
+    spec
   end
 
   let(:provider_network_name) { 'manual-network' }
 
   let(:manifest) do
-    manifest = Bosh::Spec::NewDeployments.simple_manifest_with_stemcell
-    manifest['jobs'] = [api_job_spec, mysql_job_spec]
+    manifest = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
+    manifest['instance_groups'] = [api_instance_group_spec, mysql_instance_group_spec]
     manifest
   end
 
@@ -106,7 +106,7 @@ describe 'Links with local_dns enabled', type: :integration do
 
           context "when 'ip_addresses' is set to true on the consumer jobs link options" do
             before do
-              api_job_spec['templates'][0]['consumes']['db']['ip_addresses'] = true
+              api_instance_group_spec['jobs'][0]['consumes']['db']['ip_addresses'] = true
             end
 
             it 'outputs ip addresses when accessing instance.address of the link' do
@@ -152,7 +152,7 @@ describe 'Links with local_dns enabled', type: :integration do
 
           context "when 'ip_addresses' is set to true on the consumer jobs link options" do
             before do
-              api_job_spec['templates'][0]['consumes']['db']['ip_addresses'] = true
+              api_instance_group_spec['jobs'][0]['consumes']['db']['ip_addresses'] = true
             end
 
             it 'logs to debug that IP address is not available for the link provider instance' do
@@ -219,7 +219,7 @@ describe 'Links with local_dns enabled', type: :integration do
           end
 
           it 'respects address provided in a manual link' do
-            manifest['jobs'] = [job_link_overrided_spec]
+            manifest['instance_groups'] = [job_link_overrided_spec]
             deploy_simple_manifest(manifest_hash: manifest)
             expect(rendered_template['i_eat_links']['address']).to eq('broker.external-db.com')
           end
@@ -227,10 +227,10 @@ describe 'Links with local_dns enabled', type: :integration do
       end
 
       context 'when having cross deployment links' do
-        let(:mysql_job_spec) do
-          job_spec = Bosh::Spec::NewDeployments.simple_job(
+        let(:mysql_instance_group_spec) do
+          spec = Bosh::Spec::NewDeployments.simple_instance_group(
             name: 'mysql',
-            templates: [
+            jobs: [
               {
                 'name' => 'database',
                 'provides' => {
@@ -244,15 +244,15 @@ describe 'Links with local_dns enabled', type: :integration do
             instances: 1,
             static_ips: ['192.168.1.10']
           )
-          job_spec['azs'] = ['z1']
-          job_spec['networks'] = [{ 'name' => network_name}]
-          job_spec
+          spec['azs'] = ['z1']
+          spec['networks'] = [{ 'name' => network_name}]
+          spec
         end
 
-        let(:api_job_spec) do
-          job_spec = Bosh::Spec::NewDeployments.simple_job(
+        let(:api_instance_group_spec) do
+          spec = Bosh::Spec::NewDeployments.simple_instance_group(
             name: 'my_api',
-            templates: [
+            jobs: [
               {
                 'name' => 'api_server',
                 'consumes' => {
@@ -268,20 +268,20 @@ describe 'Links with local_dns enabled', type: :integration do
               }],
             instances: 1
           )
-          job_spec['networks'] = [{ 'name' => network_name}]
-          job_spec['azs'] = ['z1']
-          job_spec
+          spec['networks'] = [{ 'name' => network_name}]
+          spec['azs'] = ['z1']
+          spec
         end
 
         let(:provider_deployment_manifest) do
           manifest = Bosh::Spec::NetworkingManifest.deployment_manifest(name: 'provider_deployment')
-          manifest['jobs'] = [mysql_job_spec]
+          manifest['instance_groups'] = [mysql_instance_group_spec]
           manifest
         end
 
         let(:consumer_deployment_manifest) do
           manifest = Bosh::Spec::NetworkingManifest.deployment_manifest(name: 'consumer_deployment')
-          manifest['jobs'] = [api_job_spec]
+          manifest['instance_groups'] = [api_instance_group_spec]
           manifest
         end
 
@@ -308,7 +308,7 @@ describe 'Links with local_dns enabled', type: :integration do
 
           context "when consumer job sets 'ip_addresses' to true in its manifest link options" do
             before do
-              api_job_spec['templates'][0]['consumes']['db']['ip_addresses'] = true
+              api_instance_group_spec['jobs'][0]['consumes']['db']['ip_addresses'] = true
             end
 
             it 'outputs ip address when accessing instance.address of the link' do
@@ -351,7 +351,7 @@ describe 'Links with local_dns enabled', type: :integration do
 
           context "when consumer job set 'ip_addresses' to true in its manifest link options" do
             before do
-              api_job_spec['templates'][0]['consumes']['db']['ip_addresses'] = true
+              api_instance_group_spec['jobs'][0]['consumes']['db']['ip_addresses'] = true
             end
 
             it 'logs to debug that IP address is not available for the link provider instance' do
@@ -446,7 +446,7 @@ describe 'Links with local_dns enabled', type: :integration do
 
     context 'when ip_addresses field is explicitly set to FALSE in the consume link section' do
       before do
-        api_job_spec['templates'][0]['consumes']['db']['ip_addresses'] = false
+        api_instance_group_spec['jobs'][0]['consumes']['db']['ip_addresses'] = false
       end
 
       it 'outputs dns address when accessing instance.address of the link' do
@@ -488,10 +488,10 @@ describe 'Links with local_dns enabled', type: :integration do
     end
 
     context 'when having cross deployment links' do
-      let(:mysql_job_spec) do
-        job_spec = Bosh::Spec::NewDeployments.simple_job(
+      let(:mysql_instance_group_spec) do
+        spec = Bosh::Spec::NewDeployments.simple_instance_group(
           name: 'mysql',
-          templates: [
+          jobs: [
             {
               'name' => 'database',
               'provides' => {
@@ -505,15 +505,15 @@ describe 'Links with local_dns enabled', type: :integration do
           instances: 1,
           static_ips: ['192.168.1.10']
         )
-        job_spec['azs'] = ['z1']
-        job_spec['networks'] = [{ 'name' => network_name}]
-        job_spec
+        spec['azs'] = ['z1']
+        spec['networks'] = [{ 'name' => network_name}]
+        spec
       end
 
-      let(:api_job_spec) do
-        job_spec = Bosh::Spec::NewDeployments.simple_job(
+      let(:api_instance_group_spec) do
+        spec = Bosh::Spec::NewDeployments.simple_instance_group(
           name: 'my_api',
-          templates: [
+          jobs: [
             {
               'name' => 'api_server',
               'consumes' => {
@@ -529,20 +529,20 @@ describe 'Links with local_dns enabled', type: :integration do
             }],
           instances: 1
         )
-        job_spec['networks'] = [{ 'name' => network_name}]
-        job_spec['azs'] = ['z1']
-        job_spec
+        spec['networks'] = [{ 'name' => network_name}]
+        spec['azs'] = ['z1']
+        spec
       end
 
       let(:provider_deployment_manifest) do
         manifest = Bosh::Spec::NetworkingManifest.deployment_manifest(name: 'provider_deployment')
-        manifest['jobs'] = [mysql_job_spec]
+        manifest['instance_groups'] = [mysql_instance_group_spec]
         manifest
       end
 
       let(:consumer_deployment_manifest) do
         manifest = Bosh::Spec::NetworkingManifest.deployment_manifest(name: 'consumer_deployment')
-        manifest['jobs'] = [api_job_spec]
+        manifest['instance_groups'] = [api_instance_group_spec]
         manifest
       end
 
@@ -566,7 +566,7 @@ describe 'Links with local_dns enabled', type: :integration do
 
         context "when consumer job sets 'ip_addresses' to FALSE in its manifest link options" do
           before do
-            api_job_spec['templates'][0]['consumes']['db']['ip_addresses'] = false
+            api_instance_group_spec['jobs'][0]['consumes']['db']['ip_addresses'] = false
           end
 
           it 'outputs dns address when accessing instance.address of the link' do
@@ -618,7 +618,7 @@ describe 'Links with local_dns enabled', type: :integration do
 
         context "when consumer job set 'ip_addresses' to FALSE in its manifest link options" do
           before do
-            api_job_spec['templates'][0]['consumes']['db']['ip_addresses'] = false
+            api_instance_group_spec['jobs'][0]['consumes']['db']['ip_addresses'] = false
           end
 
           it 'outputs dns address when accessing instance.address of the link' do

@@ -142,7 +142,7 @@ describe 'deploy job with addons', type: :integration do
         upload_stemcell(director_client_env)
         upload_cloud_config(director_client_env)
 
-        manifest_hash = Bosh::Spec::NewDeployments.simple_manifest
+        manifest_hash = Bosh::Spec::NewDeployments.simple_manifest_with_instance_groups
 
         # deploy Deployment1
         manifest_hash['name'] = 'dep1'

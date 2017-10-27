@@ -551,8 +551,8 @@ describe 'availability zones', type: :integration do
         ]
         upload_cloud_config(cloud_config_hash: cloud_hash)
 
-        manifest = Bosh::Spec::NetworkingManifest.deployment_manifest(instances: 1, template: 'foobar_without_packages')
-        manifest['jobs'].first['azs'] = ['my-az']
+        manifest = Bosh::Spec::NetworkingManifest.deployment_manifest(instances: 1, job: 'foobar_without_packages')
+        manifest['instance_groups'].first['azs'] = ['my-az']
 
         deploy_simple_manifest(manifest_hash: manifest)
 

@@ -179,6 +179,7 @@ module Bosh::Spec
 
       instance_group_hash
     end
+
     def self.minimal_manifest
       {
         'name' => 'minimal',
@@ -204,32 +205,17 @@ module Bosh::Spec
       }
     end
 
-    def self.minimal_manifest_with_stemcell
-      {
-        'name' => 'minimal',
-        'director_uuid'  => 'deadbeef',
-
-        'releases' => [{
-          'name'    => 'test_release',
-          'version' => '1' # It's our dummy valid release from spec/assets/test_release.tgz
-        }],
-
-        'stemcells' => [{
+    def self.minimal_manifest_with_ubuntu_stemcell
+      minimal_manifest.merge('stemcells' => [
+        {
           'name' => 'ubuntu-stemcell',
           'version' => '1',
           'alias' => 'default'
-        }],
-
-        'update' => {
-          'canaries'          => 2,
-          'canary_watch_time' => 4000,
-          'max_in_flight'     => 1,
-          'update_watch_time' => 20
         }
-      }
+      ])
     end
 
-    def self.test_release_manifest
+    def self.manifest_with_release
       minimal_manifest.merge(
         'name' => DEFAULT_DEPLOYMENT_NAME,
 
@@ -241,7 +227,7 @@ module Bosh::Spec
     end
 
     def self.test_release_manifest_with_stemcell
-      minimal_manifest_with_stemcell.merge(
+      minimal_manifest_with_ubuntu_stemcell.merge(
         'name' => DEFAULT_DEPLOYMENT_NAME,
 
         'releases' => [{
@@ -252,14 +238,8 @@ module Bosh::Spec
     end
 
     def self.simple_manifest
-      test_release_manifest.merge({
+      manifest_with_release.merge({
         'jobs' => [simple_job]
-      })
-    end
-
-    def self.simple_v2_manifest_with_stemcell
-      test_release_manifest_with_stemcell.merge({
-        'instance_groups' => [simple_instance_group]
       })
     end
 
@@ -289,7 +269,7 @@ module Bosh::Spec
     end
 
     def self.remote_release_manifest(remote_release_url, sha1, version='latest')
-      minimal_manifest_with_stemcell.merge(test_release_job).merge({
+      minimal_manifest_with_ubuntu_stemcell.merge(test_release_job).merge({
         'releases' => [{
           'name'    => 'test_release',
           'version' => version,
@@ -300,7 +280,7 @@ module Bosh::Spec
     end
 
     def self.local_release_manifest(local_release_path, version = 'latest')
-      minimal_manifest_with_stemcell.merge(test_release_job).merge({
+      minimal_manifest_with_ubuntu_stemcell.merge(test_release_job).merge({
         'releases' => [{
           'name'    => 'test_release',
           'version' => version,
@@ -504,7 +484,7 @@ module Bosh::Spec
     end
 
     def self.stemcell_os_specific_addon_manifest
-      test_release_manifest.merge({
+      manifest_with_release.merge({
         'jobs' => [
           simple_job(vm_type: 'a', name: "has-addon-vm", instances: 1, stemcell: 'toronto'),
           simple_job(vm_type: 'b', name: "no-addon-vm", instances: 1, stemcell: 'centos')
