@@ -7,5 +7,7 @@ source /var/vcap/jobs/director/env
 /var/vcap/packages/director/bin/bosh-director-migrate \
   -c /var/vcap/jobs/director/config/director.yml
 
-exec /var/vcap/packages/director/bin/bosh-director \
-  -c /var/vcap/jobs/director/config/director.yml
+exec /var/vcap/packages/director/gem_home/ruby/2.4.0/gems/ruby-debug-ide-0.6.1/bin/rdebug-ide --host 0.0.0.0 --port 1234 --dispatcher-port 26162 -- /var/vcap/packages/director/bin/bosh-director -c /var/vcap/jobs/director/config/director.yml
+
+#exec /var/vcap/packages/director/bin/bosh-director \
+#  -c /var/vcap/jobs/director/config/director.yml

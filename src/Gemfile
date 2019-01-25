@@ -20,6 +20,8 @@ gem 'bundler', '~>1.17.0'
 
 gem 'ruby-prof', '0.17.0'
 
+gem 'ruby-debug-ide', '~> 0.6.0'
+
 group :production do
   # this was pulled from bosh_aws_registry's Gemfile.  Why does it exist?
   # also bosh_openstack_registry, director
