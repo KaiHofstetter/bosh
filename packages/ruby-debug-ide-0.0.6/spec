@@ -1,8 +1,0 @@
----
-name: ruby-debug-ide-0.0.6
-
-dependencies:
-    - ruby-2.4-r5
-
-files: []
-    # - ruby-debug-ide-0.0.6/ruby-debug-ide-0.0.6.gem

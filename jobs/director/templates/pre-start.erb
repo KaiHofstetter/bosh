@@ -38,6 +38,9 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+echo "source /var/vcap/jobs/director/env" >> /home/vcap/.profile
+
+
 (crontab -l | sed /task_logrotate/d; cat /var/vcap/jobs/director/config/task_logrotate.cron) | sed /^$/d | crontab
 
 ln -fs $TMPDIR/proxy /var/vcap/packages/nginx/proxy_temp

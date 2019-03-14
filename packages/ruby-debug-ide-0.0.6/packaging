@@ -1,4 +1,0 @@
-set -e -x
-
-/var/vcap/packages/ruby-2.4-r5/bin/gem install ruby-debug-ide -v 0.6.0 --no-ri --no-rdoc
-#${BOSH_INSTALL_TARGET}/bin/gem install ruby-debug-ide -v 0.6.0 --no-ri --no-rdoc
